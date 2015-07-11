@@ -341,8 +341,7 @@ parseMSEARCHReply(const char * reply, int size,
  * no devices was found.
  * It is up to the caller to free the chained list
  * delay is in millisecond (poll) */
-MINIUPNP_LIBSPEC struct UPNPDev *
-upnpDiscoverDevices(const char * const deviceTypes[],
+MINIUPNP_LIBSPEC struct UPNPDev *upnpDiscoverDevices(const char * const deviceTypes[],
                     int delay, const char * multicastif,
                     const char * minissdpdsock, int sameport,
                     int ipv6,

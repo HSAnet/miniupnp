@@ -341,8 +341,7 @@ parseMSEARCHReply(const char * reply, int size,
  * no devices was found.
  * It is up to the caller to free the chained list
  * delay is in millisecond (poll) */
-MINIUPNP_LIBSPEC struct UPNPDev *
-upnpDiscoverDevices(const char * const deviceTypes[],
+MINIUPNP_LIBSPEC struct UPNPDev *upnpDiscoverDevices(const char * const deviceTypes[],
                     int delay, const char * multicastif,
                     const char * minissdpdsock, int sameport,
                     int ipv6,
@@ -383,7 +382,8 @@ upnpDiscoverDevices(const char * const deviceTypes[],
 	if(!minissdpdsock)
 		minissdpdsock = "/var/run/minissdpd.sock";
 	for(deviceIndex = 0; !devlist && deviceTypes[deviceIndex]; deviceIndex++) {
-		devlist = getDevicesFromMiniSSDPD(deviceTypes[deviceIndex],
+        char * myDev = deviceTypes[deviceIndex];
+        devlist = getDevicesFromMiniSSDPD(deviceTypes[deviceIndex],
 		                                  minissdpdsock);
 		/* We return what we have found if it was not only a rootdevice */
 		if(devlist && !strstr(deviceTypes[deviceIndex], "rootdevice")) {
@@ -561,6 +561,7 @@ upnpDiscoverDevices(const char * const deviceTypes[],
 	}
 	/* receiving SSDP response packet */
 	for(deviceIndex = 0; deviceTypes[deviceIndex]; deviceIndex++) {
+        char * device = deviceTypes[deviceIndex];
 		/* sending the SSDP M-SEARCH packet */
 		n = snprintf(bufr, sizeof(bufr),
 		             MSearchMsgFmt,
@@ -651,6 +652,9 @@ upnpDiscoverDevices(const char * const deviceTypes[],
 			} else if (n == 0) {
 				/* no data or Time Out */
 				if (devlist) {
+                    //TODO need new condition: if there are any devices left on the list ,NOT if there was any device found
+                    /* Search for other devices */
+                    goto contin;
 					/* found some devices, stop now*/
 					if(error)
 						*error = UPNPDISCOVER_SUCCESS;
@@ -706,10 +710,12 @@ upnpDiscoverDevices(const char * const deviceTypes[],
 				}
 			}
 		} while(n > 0);
-	}
-error:
-	closesocket(sudp);
-	return devlist;
+    contin:
+        ;
+    }
+error: //TODO undo 711 till here and uncomment this
+    closesocket(sudp);
+    return devlist;
 }
 
 /* upnpDiscover() Discover IGD device */

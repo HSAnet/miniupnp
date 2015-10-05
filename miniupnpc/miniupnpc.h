@@ -93,6 +93,7 @@ MINIUPNP_LIBSPEC void parserootdesc(const char *, int, struct IGDdatas *);
  * ipcondescURL: url of the description of the WANIPConnection
  * controlURL_CIF: controlURL of the WANCommonInterfaceConfig
  * controlURL_6FC: controlURL of the WANIPv6FirewallControl
+ *
  */
 struct UPNPUrls {
 	char * controlURL;
